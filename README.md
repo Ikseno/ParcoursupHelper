@@ -27,4 +27,4 @@ fichier .zip dans [release](https://github.com/Ikseno/ParcoursupHelper/releases/
 
 ## Licence
 
-Ce projet est sous la licence [MIT](https://github.com/Ikseno/ParcoursupHelper/LICENSE)
+Ce projet est sous la licence [MIT](https://github.com/Ikseno/ParcoursupHelper/blob/main/LICENSE)
