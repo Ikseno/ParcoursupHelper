@@ -20,10 +20,10 @@ class MainApp:
         self.img_github = ImageTk.PhotoImage(img_github)
 
     def create_voeux(self):
-
+        """Méthode permettant de créer la page principale : le classement des voeux"""
         self.root.bind('<Return>',lambda e: self.nouveau_voeu()) # quand on appuie sur enter valide le texte mis dans la combo box
 
-        self.frame_main = tk.Frame(self.root)
+        self.frame_main = tk.Frame(self.root) # container principal contenant l'ensemble des éléments de la page
         self.frame_main.pack(expand=True, fill="both")
 
         self.title = tk.Label(self.frame_main,text="Classement", font=("MS Sans Serif", 20))
@@ -44,7 +44,7 @@ class MainApp:
 
         self.frame_voeux = tk.Frame(self.canvas_voeux)
         self.canvas_voeux.create_window((0,0), window=self.frame_voeux, anchor="nw")
-        self.frame_voeux.bind('<Configure>', lambda e: self.canvas_voeux.configure(scrollregion=self.canvas_voeux.bbox("all")))
+        self.frame_voeux.bind('<Configure>', lambda e: self.canvas_voeux.configure(scrollregion=self.canvas_voeux.bbox("all"))) # pour la barre de scroll
 
         self.user_input = tk.StringVar()
         self.entry = tk.Entry(self.frame_top, textvariable=self.user_input)
@@ -95,6 +95,7 @@ class MainApp:
                 trash.grid(row=i,column=4, sticky='e',padx=(10,0), pady=(10,0))
                 
     def create_solution(self):
+        """Méthode permettant de créer la page solution"""
         self.frame_main2 = tk.Frame(self.root)
         self.frame_main2.pack(expand=True, fill="both")
 
@@ -134,10 +135,10 @@ class MainApp:
             algo = GaleShapleyEleve(self.voeux,self.reponses)
             algo.process_formation()
 
-            algo_voeux, formation_accept, definitive = algo.retour_gui()
+            algo_voeux, formation_accept, definitive = algo.retour_gui() # cette fonction nous donne une liste des formations qu'il faut garder et nous indique laquelle il faut conserver (provisoirement/définitivement) d'après un algorithme de Gale-Shapley
             
             for i, (voeu, reponse) in enumerate(zip(self.voeux, self.reponses), start=1):
-                if voeu == formation_accept:
+                if voeu == formation_accept: # Si le voeu est celui qu'on doit accepter (provisoirement/définitivement)
                     label_voeu = tk.Label(self.frame_voeux, text=str(i) + ". " + voeu)
                     if definitive:
                         label_action = tk.Label(self.frame_voeux,text="Accepter définitivement ce voeu", fg="green")
@@ -146,7 +147,7 @@ class MainApp:
                     label_voeu.grid(row=i, column=0, sticky='w', pady=(10,0))
                     label_action.grid(row=i, column=1, sticky='w', pady=(10,0))
 
-                elif voeu not in algo_voeux or reponse == "oui":
+                elif voeu not in algo_voeux: # Si on ne doit pas garder la formation
                     label_voeu = StrikethroughLabel(self.frame_voeux, text=str(i) + ". " + voeu)
                     label_voeu.grid(row=i, column=0, sticky='w', pady=(10,0), padx=(0,10))
                     if reponse == "en attente" or reponse == "oui" or reponse == "none":
@@ -155,25 +156,22 @@ class MainApp:
                     else:
                         label_action = tk.Label(self.frame_voeux,text="La formation ne vous veut pas", fg="red")
                         label_action.grid(row=i, column=1, sticky='w', pady=(10,0))
-                elif reponse == "en attente":
+
+                elif reponse == "en attente": # Si on garde la formation et que sa réponse est "en attente"
                     label_voeu = tk.Label(self.frame_voeux, text=str(i) + ". " + voeu)
                     label_action = tk.Label(self.frame_voeux,text="Maintenir ce voeu en attente", fg="blue")
-         
                     label_voeu.grid(row=i, column=0, sticky='w', pady=(10,0))
                     label_action.grid(row=i, column=1, sticky='w', pady=(10,0))
-                elif reponse=="non":     # si reponse formation est non et qu'on a accepté un voeu
-                    label_voeu = StrikethroughLabel(self.frame_voeux, text=str(i) + ". " + voeu)
-                    label_voeu.grid(row=i, column=0, sticky='w', pady=(10,0), padx=(0,10))
-                    label_action = tk.Label(self.frame_voeux,text="La formation ne vous veut pas", fg="red")
-                    label_action.grid(row=i, column=1, sticky='w', pady=(10,0))
-                else: # si reponse == None
+                
+                else: # Si on garde la formation et quelle n'a pas encore envoyé de proposition ('none')
                     label_voeu = tk.Label(self.frame_voeux, text=str(i) + ". " + voeu)
                     label_action = tk.Label(self.frame_voeux,text="La formation ne vous a pas encore répondu", fg="grey")
-         
+        
                     label_voeu.grid(row=i, column=0, sticky='w', pady=(10,0))
                     label_action.grid(row=i, column=1, sticky='w', pady=(10,0))
 
     def nouveau_voeu(self):
+        """Méthode permettant d'ajouter un nouveau voeu dans le classement"""
         text = self.user_input.get()
         if text:  # pour éviter d'avoir des voeux vides
             self.voeux.append(text)
@@ -184,6 +182,7 @@ class MainApp:
         self.entry.focus_set()
     
     def delete_voeu(self,voeux):
+        """Méthode permettant de supprimer un voeu du classement"""
         self.voeux.pop(voeux)
         self.reponses.pop(voeux)
         save_file(self.voeux,self.reponses) # sauvegarde sur fichier .json
@@ -191,6 +190,7 @@ class MainApp:
         self.create_voeux()
 
     def decaler_voeux(self,direction,voeux):
+        """Méthode permettant de déplacer un voeu dans le classement, 2 directions possibles : 'up','down'"""
         if direction == "up":
             if voeux == 0:
                 self.voeux.append(self.voeux.pop(voeux))
@@ -210,11 +210,13 @@ class MainApp:
         self.create_voeux()
     
     def combobox_change(self,voeux,reponse):
+        """Méthode permettant de changer la réponse de la formation suite à un changement dans la combobox"""
         self.reponses[voeux]=reponse
         self.frame_voeux.focus_set() # retire le surlignage bleu 
         save_file(self.voeux,self.reponses) # sauvegarde sur fichier .json
 
     def reset(self):
+        """Méthode permettant de supprimer toutes les entrées de la base de données"""
         reponse_alerte = messagebox.askyesno("Reset", "Etes-vous sûr de vouloir supprimer toutes vos entrées ?")
         if reponse_alerte:
             self.voeux = []
@@ -226,6 +228,7 @@ class MainApp:
     
 
 def main():
+    """Fonction permettant d'instancier l'application"""
     root = tk.Tk()
 
     screen_width = root.winfo_screenwidth()
@@ -238,7 +241,7 @@ def main():
     window_height = min(768, screen_height - taskbar_height)
 
     root.geometry("%dx%d" % (window_width, window_height))
-    root.title("Parcoursup Helper")
+    root.title("ParcoursupHelper")
     root.iconbitmap("./assets/favicon.ico")
     
     # lis le fichier .json pour récupérer la liste des voeux et des réponses

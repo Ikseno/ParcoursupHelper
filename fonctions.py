@@ -41,6 +41,7 @@ class GaleShapleyEleve:
         self.formation_accept = None 
 
     def process_formation(self):
+        """Méthode permettant de trouver l'ensemble des formations qu'il est nécessaire de garder ainsi que la formation qu'il faut accepter (provisoirement/définitivement)"""
         if not self.formation_definitive:
             i = 0
             while i < len(self.classement):
@@ -51,11 +52,12 @@ class GaleShapleyEleve:
                     self.rep_forma.pop(i)
                     if self.process_formation():  
                         return True
-                    # Do not increment i because we want to recheck at the same index after removing an item.
                 elif self.rep_forma[i] == "oui":
                     if i == 0:
                         self.formation_accept = self.classement[i]
                         self.formation_definitive = True
+                        self.classement = self.classement[:1]
+                        self.rep_forma=self.rep_forma[:1]
                         return True
                     else:
                         self.formation_accept = self.classement[i]
@@ -63,8 +65,9 @@ class GaleShapleyEleve:
                         self.rep_forma = self.rep_forma[:i+1]
                         return True
                 else:
-                    i += 1  # increment i if no item was removed.
+                    i += 1 
         return False
 
     def retour_gui(self):
+        """Méthode renvoyant un tuple qui sera lu par l'application"""
         return (self.classement,self.formation_accept,self.formation_definitive)
