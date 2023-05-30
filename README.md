@@ -23,7 +23,7 @@ Il est important de préciser qu'elle n'utilise aucune méthode de triche qui pr
 
 ## Installation
 
-fichier .zip dans [release](https://github.com/Ikseno/ParcoursupHelper/releases/tag/v1.0)
+fichier .zip dans le dernier [release](https://github.com/Ikseno/ParcoursupHelper/releases) disponible
 
 ## Licence
 
